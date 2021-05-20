@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_config/flutter_config.dart';
 import 'package:provider/provider.dart';
 import 'package:uahage/View/Auth/wrapper.dart';
 // import 'package:flutter_screenutil/flutter_screenutil.dart';
