@@ -15,8 +15,14 @@ import 'package:uahage/Widget/static.dart';
 
 class registrationPage extends StatefulWidget {
   String Email;
+  var token;
   String loginOption;
-  registrationPage({Key key, this.Email, this.loginOption}) : super(key: key);
+  registrationPage(
+      {Key key,
+      @required this.Email,
+      @required this.token,
+      @required this.loginOption})
+      : super(key: key);
   @override
   _registrationPageState createState() => _registrationPageState();
 }
@@ -38,6 +44,7 @@ class _registrationPageState extends State<registrationPage> {
   String birthday = "";
   String nickName = "";
   bool isIdValid = false;
+  var token;
   String loginOption = "";
   String gender = "";
   String userAge = "";
@@ -49,8 +56,9 @@ class _registrationPageState extends State<registrationPage> {
   void initState() {
     super.initState();
     setState(() {
-      loginOption = widget.loginOption;
+      token = widget.token;
       Email = widget.Email;
+      loginOption = widget.loginOption;
     });
   }
 
@@ -58,11 +66,10 @@ class _registrationPageState extends State<registrationPage> {
   Future checkNickName() async {
     try {
       var response = await http.get(
-        Uri.parse(url +
-            "/api/users/find-by-option?option=nickname&optionData='$nickName'"),
+        Uri.parse(url + "/api/users/validate-nickname/$nickName"),
       );
-      print("isdata nickname" + jsonDecode(response.body)["isdata"].toString());
-      if (jsonDecode(response.body)["isdata"] == 0) {
+      print("isdata nickname" + jsonDecode(response.body)["data"].toString());
+      if (jsonDecode(response.body)["data"]) {
         setState(() {
           isIdValid = true;
         });
@@ -84,29 +91,31 @@ class _registrationPageState extends State<registrationPage> {
 
     Map<String, dynamic> userData = type == "withNickname"
         ? {
-            "email": "'$Email$loginOption'",
+            "providerName": "$loginOption",
             "nickname": "'$nickName'",
-            "gender": "'$gender'",
-            "birthday": "'$birthday'",
-            "age": userAge,
+            "babyGender": "'$gender'",
+            "babyBirthday": "'$birthday'",
+            "ageGroupType": userAge,
             "URL": null,
-            "rf_token": null
           }
         : {
-            "email": "'$Email$loginOption'",
+            "email": "'$Email'",
+            "providerName": "$loginOption",
             "nickname": null,
-            "gender": null,
-            "birthday": null,
-            "age": null,
+            "babyGender": null,
+            "babyBirthday": null,
+            "ageGroupType": null,
             "URL": null,
-            "rf_token": null
           };
     try {
-      print(url);
+      print(userData);
+      var newToken = jsonDecode(token.toString())["access_token"];
+      print("token $newToken");
       var response = await http.post(
-        Uri.parse(url + "/api/auth/signup"),
+        Uri.parse(url + "/api/users"),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': "${newToken}"
         },
         body: jsonEncode(userData),
       );

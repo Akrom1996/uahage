@@ -79,7 +79,7 @@ class _loginPageState extends State<loginPage> {
                   onTap: () async {
                     Navigator.of(context).push(MaterialPageRoute(
                         builder: (context) =>
-                            agreementPage(loginOption: "kakao")));
+                            agreementPage(loginOption: "KAKAO")));
                   },
                   child: Image.asset(
                     "./assets/secondPage/kakao.png",
@@ -98,24 +98,9 @@ class _loginPageState extends State<loginPage> {
                     print("Naver login");
                     Navigator.of(context).push(MaterialPageRoute(
                         builder: (BuildContext context) =>
-                            agreementPage(loginOption: "naver")));
+                            agreementPage(loginOption: "NAVER")));
                   },
                   child: Image.asset("./assets/secondPage/naver.png"),
-                ),
-              ),
-
-              // Button
-              Container(
-                margin: EdgeInsets.fromLTRB(96.w, 53.h, 94.w, 0),
-                height: 195.h,
-                child: InkWell(
-                  onTap: () {
-                    print("login");
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (BuildContext context) =>
-                            agreementPage(loginOption: "login")));
-                  },
-                  child: Image.asset("./assets/secondPage/button.png"),
                 ),
               ),
             ],

@@ -1,18 +1,18 @@
+import 'dart:convert';
+
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
-import 'dart:convert';
 import 'package:uahage/View/Navigations/Navigationbar.dart';
 import 'package:uahage/View/Auth/announce.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:kakao_flutter_sdk/all.dart';
-import 'package:uahage/Widget//showDialog.dart';
+import 'package:uahage/Widget/showDialog.dart';
 import 'registrationPage.dart';
 import 'package:flutter_naver_login/flutter_naver_login.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:uahage/Widget//appBar.dart';
-import 'package:flutter_config/flutter_config.dart';
 import 'package:uahage/API/auth.dart';
 import 'package:uahage/Widget/static.dart';
+import 'package:http/http.dart' as http;
 
 class agreementPage extends StatefulWidget {
   agreementPage({Key key, this.loginOption}) : super(key: key);
@@ -26,6 +26,7 @@ class _agreementPageState extends State<agreementPage> {
   String url = URL;
   String Email = "";
   String userId = "";
+  String clientId = "581f27a7aed8a99e5b0a78b33c855dab";
 
   //kakao login----------------------------------------------------------------------------
   //-----------------------------------------------------------------------------------------
@@ -40,14 +41,21 @@ class _agreementPageState extends State<agreementPage> {
   }
 
   _issueAccessToken(String authCode) async {
+    print("issue");
     try {
       var token = await AuthApi.instance.issueAccessToken(authCode);
-      AccessTokenStore.instance.toStore(token);
-      await kakaoGetEmail();
-      isAlreadyRegistered = await auth.checkEmail(Email, loginOption);
-      print("is registered: $isAlreadyRegistered");
-      if (isAlreadyRegistered) {
-        userId = await auth.signIn(Email, loginOption);
+      var res = await AccessTokenStore.instance.toStore(token);
+      print(token);
+      print(res);
+      // await kakaoGetEmail();
+      final User user = await UserApi.instance.me();
+
+      // setState(() {
+      Email = user.kakaoAccount.email ?? "";
+      isAlreadyRegistered = await auth.checkEmail(Email);
+      print(isAlreadyRegistered);
+      // print("is registered: $isAlreadyRegistered");
+      if (!isAlreadyRegistered) {
         Navigator.pushReplacement(
             context,
             MaterialPageRoute(
@@ -60,6 +68,7 @@ class _agreementPageState extends State<agreementPage> {
             MaterialPageRoute(
               builder: (context) => registrationPage(
                 Email: Email,
+                token: res,
                 loginOption: loginOption,
               ),
             ));
@@ -73,6 +82,7 @@ class _agreementPageState extends State<agreementPage> {
     try {
       var code = await AuthCodeClient.instance.request();
       await _issueAccessToken(code);
+      print("loginwith");
     } catch (e) {
       print(e.toString());
     }
@@ -90,7 +100,7 @@ class _agreementPageState extends State<agreementPage> {
   kakaoGetEmail() async {
     final User user = await UserApi.instance.me();
 
-    print(user.kakaoAccount.toString());
+    // print(user.kakaoAccount.toString());
 
     setState(() {
       Email = user.kakaoAccount.email ?? "";
@@ -113,7 +123,7 @@ class _agreementPageState extends State<agreementPage> {
         Email = resAccount.email;
       });
 
-      isAlreadyRegistered = await auth.checkEmail(Email, loginOption);
+      isAlreadyRegistered = await auth.checkEmail(Email);
       // create database
       if (isAlreadyRegistered) {
         Navigator.pushReplacement(
@@ -483,7 +493,7 @@ class _agreementPageState extends State<agreementPage> {
                       );
                     } else {
                       switch (loginOption) {
-                        case "kakao":
+                        case "KAKAO":
                           if (_isKakaoTalkInstalled)
                             buildShowDialogOnOk(_loginWithTalk(), context,
                                 200.h, 200.w, 80.w, 100.w, 62.5.sp);
@@ -492,17 +502,11 @@ class _agreementPageState extends State<agreementPage> {
                                 200.h, 200.w, 80.w, 100.w, 62.5.sp);
                           }
                           break;
-                        case "naver":
+                        case "NAVER":
                           buildShowDialogOnOk(naverLogin(), context, 200.h,
                               200.w, 80.w, 100.w, 62.5.sp);
                           break;
-                        case "login":
-                          Navigator.of(context).pushReplacement(
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    navigationPage(loginOption: loginOption)),
-                          );
-                          break;
+
                         default:
                           break;
                       }

@@ -90,11 +90,12 @@ class auth {
   }
 
   //CHECK THE EMAIL
-  static Future checkEmail(Email, loginOption) async {
+  static Future checkEmail(Email) async {
     String url = URL;
-    var response = await http.get(Uri.parse(url +
-        "/api/users/find-by-option?option=email&optionData=$Email$loginOption"));
-    return jsonDecode(response.body)["isdata"] == 0 ? true : false;
+    var response =
+        await http.get(Uri.parse(url + "/api/users/validate-email/$Email"));
+    print("response: ${jsonDecode(response.body)}");
+    return jsonDecode(response.body)["data"];
   }
 
 //CHECK THE NICKNAME
