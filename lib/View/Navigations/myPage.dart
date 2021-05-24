@@ -56,12 +56,12 @@ class _myPageState extends State<myPage> {
     url = URL;
     print(url);
     // setState(() {
-    //   userId = widget.userId ?? "";
+    userId = widget.userId ?? "";
     // });
 
-    if (loginOption != "login") {
-      getMyInfo();
-    }
+    //if (loginOption != "login") {
+    getMyInfo();
+    //}
   }
 
   toast show_toast = new toast();

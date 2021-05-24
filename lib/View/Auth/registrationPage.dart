@@ -115,7 +115,7 @@ class _registrationPageState extends State<registrationPage> {
         Uri.parse(url + "/api/users"),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
-          'Authorization': "${newToken}"
+          'Authorization': "$newToken"
         },
         body: jsonEncode(userData),
       );
@@ -130,7 +130,7 @@ class _registrationPageState extends State<registrationPage> {
           userId = data['data']['id'].toString();
         });
         //save user info
-        await sharedPreferences.setString("uahageUserToken", token);
+        await sharedPreferences.setString("uahageUserToken", newToken);
         await sharedPreferences.setString("uahageUserId", userId);
 
         return data["message"];
