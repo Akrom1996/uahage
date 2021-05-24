@@ -51,6 +51,7 @@ class _agreementPageState extends State<agreementPage> {
       final User user = await UserApi.instance.me();
 
       // setState(() {
+
       Email = user.kakaoAccount.email ?? "";
       isAlreadyRegistered = await auth.checkEmail(Email);
       print(isAlreadyRegistered);
